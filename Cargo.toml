@@ -5,9 +5,7 @@ authors = ["Ashley Mannix <ashleymannix@live.com.au>"]
 
 [features]
 default = []
-mio-support = [
-	
-]
-integration = [
+
+integration-test = [
 
 ]
