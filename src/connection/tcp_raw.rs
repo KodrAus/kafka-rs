@@ -7,7 +7,7 @@
 extern crate mio;
 
 use std::net::SocketAddr;
-use mio::tcp::*;
+use self::mio::tcp::*;
 
 pub struct KafkaConnection {
 	address: String,
