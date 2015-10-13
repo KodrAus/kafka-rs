@@ -18,6 +18,14 @@ use self::bytes::{ ByteBuf, MutByteBuf, SliceBuf };
 use self::mio::util::Slab;
 
 //Handler for connection
+//Handler for reading results from connection
+//Handler for writing request to connection
+
+pub struct RequestResponse;
+impl Handler for RequestResponse {
+	type Timeout = usize;
+	type Message = ();
+}
 
 //Single TCP connection to Kafka
 pub struct TcpConn {
@@ -42,5 +50,9 @@ impl TcpConn {
 			token: None,
 			interest: EventSet::hup()
 		}
+	}
+
+	pub fn writable(&mut self, event_loop: &mut EventLoop<RequestResponse>) -> io::Result<()> {
+		Ok(())
 	}
 }
