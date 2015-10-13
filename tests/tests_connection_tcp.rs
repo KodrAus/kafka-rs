@@ -1,6 +1,3 @@
-//TODO: Block out tcp implementation using mio event loop
-//Test locally and as integration tests
-
 extern crate mio;
 extern crate kafka;
 
@@ -17,6 +14,7 @@ fn get_new_conn() -> TcpConn {
 
 	TcpConn::new(&addr)
 }
+
 #[test]
 fn can_create_raw_connection() {
 	let conn = get_new_conn();
@@ -37,7 +35,7 @@ fn can_write_to_raw_connection() {
 	let buf = [0; 1024];
 	conn.write(buf).unwrap();
 
-	//Assert the data is written
+	panic!("Implement");
 }
 
 #[test]
