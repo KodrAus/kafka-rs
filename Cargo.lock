@@ -2,13 +2,20 @@
 name = "kafka"
 version = "0.1.0"
 dependencies = [
+ "bytes 0.2.10 (git+https://github.com/carllerche/bytes)",
  "mio 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "slab 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "bitflags"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "bytes"
+version = "0.2.10"
+source = "git+https://github.com/carllerche/bytes#01c1e05a91fe24e0ea5f6b3050effe8a5ed402d6"
 
 [[package]]
 name = "bytes"

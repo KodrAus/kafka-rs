@@ -5,65 +5,54 @@ extern crate mio;
 extern crate kafka;
 
 use std::net;
-use std::thread;
-use std::io::{ Read, Write };
 
-use mio::{ EventLoop, Handler, Token, EventSet, PollOpt, TryRead, TryWrite };
-use mio::tcp::{ TcpListener, TcpStream };
+use mio::*;
+use mio::tcp::TcpStream;
 
-#[test]
-fn can_write_to_stream() {
-	//Writer handler for the TCP stream
-	const N: usize = 16 * 1024 * 1024;
-	struct H { amt: usize, socket: TcpStream }
+use kafka::connection::tcp_raw::TcpConn;
 
-	impl Handler for H {
-		type Timeout = ();
-		type Message = ();
-
-		//Executed when the event loop is ready
-		fn ready(&mut self, event_loop: &mut EventLoop<Self>, token: Token, _events: EventSet) {
-			assert_eq!(token, Token(1));
-
-			let b = [0; 1024];
-			loop {
-				if let Some(amt) = self.socket.try_write(&b).unwrap() {
-					self.amt += amt;
-				}
-				else {
-					break
-				}
-				if self.amt >= N {
-					event_loop.shutdown();
-					break
-				}
-			}
-		}
-	}
-
-	//Bind a TcpListener
+fn get_new_conn() -> TcpConn {
 	let l = net::TcpListener::bind("127.0.0.1:0").unwrap();
 	let addr = l.local_addr().unwrap();
 
-	//Spawn a worker thread that grabs the TcpStream from l and reads its contents to a buffer until finished
-	let t = thread::spawn(move || {
-		let mut s = l.accept().unwrap().0;
-		let mut b = [0; 1024];
-		let mut amt = 0;
+	TcpConn::new(&addr)
+}
+#[test]
+fn can_create_raw_connection() {
+	let conn = get_new_conn();
+	println!("{}", conn.address);
+}
 
-		while amt < N {
-			amt += s.read(&mut b).unwrap();
-		}
-	});
+#[test]
+fn can_write_to_raw_connection() {
+	let conn = get_new_conn();
 
-	//Create a new event loop and register an event handler that writes to the socket being read on another thread
-	let mut e = EventLoop::new().unwrap();
-	let s = TcpStream::connect(&addr).unwrap();
+	let listener = conn.get_listener();
 
-	e.register(&s, Token(1)).unwrap();
+	//Create an event loop and subscribe a listener to its events on Token(0)
+	let event_loop = EventLoop::new().unwrap();
+	event_loop.register(&listener, Token::new(0), EventSet::readable(), PollOpt::edge()).unwrap();
 
-	let mut h = H { amt: 0, socket: s };
-	e.run(&mut h).unwrap();
-	
-	t.join().unwrap();
+	//Write to the conn
+	let buf = [0; 1024];
+	conn.write(buf).unwrap();
+
+	//Assert the data is written
+}
+
+#[test]
+fn can_read_from_raw_connection() {
+	let conn = get_new_conn();
+
+	let event_loop = EventLoop::new().unwrap();
+
+	//Create a stream and write data to its
+	//Assert the conn picks it up
+	//TODO: Verify this approach is appropriate
+	panic!("Implement");
+}
+
+#[test]
+fn can_disconnect_raw_connection() {
+	panic!("Implement");
 }
