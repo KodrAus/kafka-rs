@@ -1,33 +1,44 @@
 #![feature(test)]
+
 extern crate test;
 extern crate mio;
 extern crate kafka;
 
 use test::Bencher;
+use std::net::SocketAddr;
 
-use std::net;
+use mio::tcp::*;
 
-use kafka::connection::tcp_raw::TcpConn;
+use kafka::connection::tcp::*;
 
 #[bench]
-fn create_raw_tcp_connection(b: &mut Bencher) {
+fn create_tcp_connection(b: &mut Bencher) {
 	b.iter(|| {
-		let l = net::TcpListener::bind("127.0.0.1:0").unwrap();
-		let addr = l.local_addr().unwrap();
+		let addr = "0.0.0.0:0".parse().unwrap();
+		let stream = TcpStream::connect(&addr).unwrap();
 
-		let conn = TcpConn::new(&addr);
+		//Create a new connection
+		let conn = Connection::new(stream, mio::Token(0));
     });
 }
 
 #[bench]
-fn write_to_raw_tcp_connection(b: &mut Bencher) {
+fn write_to_tcp_connection(b: &mut Bencher) {
 	b.iter(||{
 
 	});
 }
 
 #[bench]
-fn read_from_raw_tcp_connection(b: &mut Bencher) {
+fn read_from_tcp_connection(b: &mut Bencher) {
+	b.iter(|| {
+
+	});
+}
+
+#[bench]
+#[cfg(feature="test-integration")]
+fn it_works_integration(b: &mut Bencher) {
 	b.iter(|| {
 
 	});

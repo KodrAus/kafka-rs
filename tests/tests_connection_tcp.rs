@@ -1,56 +1,44 @@
 extern crate mio;
 extern crate kafka;
 
-use std::net;
+use std::net::SocketAddr;
 
-use mio::*;
-use mio::tcp::TcpStream;
+use mio::tcp::*;
 
-use kafka::connection::tcp_raw::TcpConn;
+use kafka::connection::tcp::*;
 
-fn get_new_conn() -> TcpConn {
-	let l = net::TcpListener::bind("127.0.0.1:0").unwrap();
-	let addr = l.local_addr().unwrap();
+#[test]
+fn connection_is_in_read_state_by_default() {
+	let addr = "0.0.0.0:0".parse().unwrap();
+	let stream = TcpStream::connect(&addr).unwrap();
 
-	TcpConn::new(&addr)
+	//Create a new connection
+	let conn = Connection::new(stream, mio::Token(0));
+
+	let isRead = match conn.get_state() {
+		&ConnectionState::Reading(..) => true,
+		_ => false
+	};
+
+	assert!(isRead);
 }
 
 #[test]
-fn can_create_raw_connection() {
-	let conn = get_new_conn();
-	println!("{}", conn.address);
-}
-
-#[test]
-fn can_write_to_raw_connection() {
-	let conn = get_new_conn();
-
-	let listener = conn.get_listener();
-
-	//Create an event loop and subscribe a listener to its events on Token(0)
-	let event_loop = EventLoop::new().unwrap();
-	event_loop.register(&listener, Token::new(0), EventSet::readable(), PollOpt::edge()).unwrap();
-
-	//Write to the conn
-	let buf = [0; 1024];
-	conn.write(buf).unwrap();
-
+fn connection_can_transition_to_write_state() {
 	panic!("Implement");
 }
 
 #[test]
-fn can_read_from_raw_connection() {
-	let conn = get_new_conn();
-
-	let event_loop = EventLoop::new().unwrap();
-
-	//Create a stream and write data to its
-	//Assert the conn picks it up
-	//TODO: Verify this approach is appropriate
+fn connection_can_transition_to_read_state() {
 	panic!("Implement");
 }
 
 #[test]
-fn can_disconnect_raw_connection() {
+fn connection_can_write_to_socket() {
+	panic!("Implement");
+}
+
+#[test]
+fn connection_can_read_from_socket() {
 	panic!("Implement");
 }

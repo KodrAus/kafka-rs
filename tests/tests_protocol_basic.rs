@@ -48,8 +48,6 @@ fn can_get_message_from_request() {
 		content: "my content".to_string() 
 	};
 
-	//TODO: Make this a nicer builder
-	//Takes ownership of the message
 	let req = MyApiRequestMessage { 
 		req_msg: msg, 
 		req_data: ApiRequest {
@@ -60,7 +58,6 @@ fn can_get_message_from_request() {
 		} 
 	};
 
-	//Gets an immutable borrow of the message content
 	let req_msg = req.get_message();
 
 	assert!(id == req_msg.id)

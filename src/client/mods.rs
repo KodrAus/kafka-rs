@@ -7,3 +7,8 @@
 
 //Figure out how to keep a separation of concerns between protocol requests and connection
 //Perhaps protocol requests should just be serialisable, and have an expected endpoint, conn serialises and ships off
+
+//KafkaConsumerClient -> just listens on a consumer and publishes any messages as they're found for the client
+// - Get messages
+// - Execute handler logic
+// - Advance offset
