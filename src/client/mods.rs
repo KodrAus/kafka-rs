@@ -12,3 +12,6 @@
 // - Get messages
 // - Execute handler logic
 // - Advance offset
+
+//Single low-level client that maintains map of cluster data and can execute requests
+//Multiple high-level clients that are optimised for a particular scenario

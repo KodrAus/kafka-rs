@@ -1,3 +1,5 @@
+//Two-way TCP stream
+
 extern crate mio;
 extern crate bytes;
 
@@ -10,6 +12,31 @@ use std::io::Cursor;
 
 const MAX_LINE: usize = 128;
 
+//The mio handler for happenings on the tcp stream
+struct Server {
+	listener: TcpListener,
+	connections: Slab<Connection>
+}
+
+impl Server {
+	fn new (listener: TcpListener, start_token: mio::Token, range: i32) -> Server {
+		let slab = Slab::new_starting_at(start_token, range);
+
+		Server {
+			listener: listener,
+			connections: slab
+		}
+	}
+}
+
+impl mio::Handler for Server {
+	type timeout = ();
+	type Message = ();
+
+	//When ready, create a connection and write the buffered data to it
+}
+
+//The mio handler for working with a tcp stream
 #[derive(Debug)]
 pub struct Connection {
 	socket: TcpStream,
@@ -28,6 +55,65 @@ impl Connection {
 
 	pub fn get_state(&self) -> &ConnectionState {
 		&self.state
+	}
+
+	pub fn ready(&mut self, event_loop: &mut mio::EventLoop<Handler>, events: mio::EventSet) {
+		match self.state {
+			ConnectionState::Reading(..) => {
+				assert!(events.is_readable(), "unexpected events");
+				self.read(event_loop)
+			}
+			ConnectionState::Writing(..) => {
+				assert!(events.is_writable(), "unexpected events");
+			}
+			_ => unimplemented!();
+		}
+	}
+
+	pub fn read(&mut self, event_loop: &mut mio::EventLoop<Handler>) {
+		match self.socket.try_read_buf(self.state.mut_read_buf()) {
+			Ok(Some(0)) => {
+				self.state = ConnectionState::Closed;
+			}
+			Ok(Some(n)) => {
+				println!("read {} bytes", n);
+
+				self.state.try_transition_to_writing();
+				self.reregister(event_loop);
+			}
+			Ok(None) => {
+				self.reregister(event_loop);
+			}
+			Err(e) => {
+				panic!("got an error trying to read: err={:?}", e);
+			}
+		}
+	}
+
+	pub fn write(&mut self, event_loop: &mut mio::EventLoop<Handler>) {
+		match self.socket.try_write_uf(self.state.mut_write_buf()) {
+			Ok(Some(_)) => {
+				self.state.try_transition_to_reading();
+				self.reregister(event_loop);
+			}
+			Ok(None) => {
+				self.reregister(event_loop);
+			}
+			Err(e) => {
+				panic!("got an error trying to write: err={:?}", e);
+			}
+		}
+	}
+
+	fn reregister(&self, event_loop: mio::EventLoop<Handler>) {
+		event_loop.reregister(&self.socket, self.token, self.state.event_set(), mio::PollOpt::oneshot()).unwrap();
+	}
+
+	fn is_closed(&self) -> bool {
+		match self.state {
+			ConnectionState::Closed => true,
+			_ => false
+		}
 	}
 }
 
