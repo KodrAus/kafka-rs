@@ -1,19 +1,18 @@
+//Other protocol modules implement their own Message types, that all wrap within the same ApiRequestMessage and ApiResponseMessage
+
 pub trait Message: Sized + Send {
 	fn get_key(&self) -> i32;
 }
 
-pub struct ApiRequest {
+pub struct ApiRequestMessage<T: Message> {
 	pub api_key: i16,
 	pub api_version: i16,
 	pub correlation_id: i32,
-	pub client_id: String
+	pub client_id: String,
+	pub request: T
 }
 
-pub trait ApiRequestMessage<T: Message> {
-	fn get_request(&self) -> &ApiRequest;
-	fn get_message(&self) -> &T;
-}
-
-pub trait ApiResponseMessage<T: Message> {
-	fn get_response(&self) -> &T;
+pub struct ApiResponseMessage<T: Message> {
+	pub correlation_id: i32,
+	pub response: T
 }
