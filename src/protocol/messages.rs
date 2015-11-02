@@ -4,6 +4,7 @@ use ::serialisation::*;
 
 //TODO: May need to be more general with ApiRequestMessage and ApiResponseMessage for serialisation
 //Possibly split into separate SingleHeader and MultiHeader
+//Move serialisation into protocol module
 //Standard request/response type
 pub trait Message: Sized + Send + ToBytes + FromBytes {
 	fn get_key(&self) -> i32;
