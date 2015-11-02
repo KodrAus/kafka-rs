@@ -10,7 +10,8 @@ use kafka::connection::tcp_connection::ConnectionMessage;
 
 use ::fixtures::*;
 
-//TODO: Make this loop able to work on accepting non-generic enums
+//Create a standard to/from bytes method on Messages so they can be properly serialised / deserialised generically
+//TODO: Make this loop able to work on accepting generic enums
 //Receives a request message and sends a response message with the same correlation id
 pub fn respond(req: ConnectionMessage<MyRequest, MyResponse>) -> Result<ConnectionMessage<MyRequest, MyResponse>, Error> {
 	match req {
