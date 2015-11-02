@@ -1,5 +1,6 @@
 //Other protocol modules implement their own Message types, that all wrap within the same ApiRequestMessage and ApiResponseMessage
 
+//Implement ToBytes and FromBytes
 pub trait Message: Sized + Send {
 	fn get_key(&self) -> i32;
 }
