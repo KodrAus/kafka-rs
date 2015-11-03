@@ -11,10 +11,15 @@ use std::sync::mpsc::{ Sender };
 
 use ::protocol::{ ApiMessage, ApiRequestMessage, ApiResponseMessage };
 
+/// The low-level message that a connection will receive and process
 pub enum ConnectionMessage<Req: ApiMessage, Res: ApiMessage> {
+	/// An asynchronous Kafka request
 	Request(
+		/// Where to send the response asynchronously
 		Sender<Arc<ApiResponseMessage<Res>>>,
+		/// The request to send
 		ApiRequestMessage<Req>
 	),
+	/// An asynchronous Kafka response
 	Response(Arc<ApiResponseMessage<Res>>)
 }
