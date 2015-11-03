@@ -15,9 +15,7 @@ use ::protocol::{ ApiMessage, ApiRequestMessage, ApiResponseMessage };
 pub enum ConnectionMessage<Req: ApiMessage, Res: ApiMessage> {
 	/// An asynchronous Kafka request
 	Request(
-		/// Where to send the response asynchronously
 		Sender<Arc<ApiResponseMessage<Res>>>,
-		/// The request to send
 		ApiRequestMessage<Req>
 	),
 	/// An asynchronous Kafka response
