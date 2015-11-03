@@ -2,8 +2,19 @@ pub mod tcp_connection;
 pub mod tcp_pump;
 
 pub mod tcp {
-	pub use super::tcp_connection;
 	pub use super::tcp_pump;
+	pub use super::tcp_connection;
 }
 
-//Think about implementing a dedicated KafkaPump that is optimised purely to read off a particular topic
+use std::sync::Arc;
+use std::sync::mpsc::{ Sender };
+
+use ::protocol::{ ApiMessage, ApiRequestMessage, ApiResponseMessage };
+
+pub enum ConnectionMessage<Req: ApiMessage, Res: ApiMessage> {
+	Request(
+		Sender<Arc<ApiResponseMessage<Res>>>,
+		ApiRequestMessage<Req>
+	),
+	Response(Arc<ApiResponseMessage<Res>>)
+}

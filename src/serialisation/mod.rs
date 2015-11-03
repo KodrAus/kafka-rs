@@ -5,6 +5,11 @@ pub trait ToBytes {
 }
 
 pub trait FromBytes {
-	type Deserialised;
-	fn from_bytes(buf: &[u8]) -> Result<Self::Deserialised, Error>;
+	fn from_bytes(buf: &[u8]) -> Result<Self, Error> where Self: Sized;
+}
+
+pub enum Compression {
+	None,
+	Gzip,
+	Snappy
 }

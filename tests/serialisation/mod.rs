@@ -11,7 +11,7 @@ use ::fixtures::*;
 fn serialise<T: ToBytes>(data: &T) -> &[u8] {
 	data.to_bytes()
 }
-fn deserialise<T: FromBytes>(bytes: &[u8]) -> Result<<T as FromBytes>::Deserialised, Error> {
+fn deserialise<T: FromBytes>(bytes: &[u8]) -> Result<T, Error> {
 	T::from_bytes(bytes)
 }
 

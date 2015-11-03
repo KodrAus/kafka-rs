@@ -13,13 +13,9 @@ use kafka::connection::tcp::*;
 
 #[bench]
 fn create_tcp_connection(b: &mut Bencher) {
-	b.iter(|| {
-		let addr = "0.0.0.0:0".parse().unwrap();
-		let stream = TcpStream::connect(&addr).unwrap();
+	b.iter(||{
 
-		//Create a new connection
-		let conn = Connection::new(stream, mio::Token(0));
-    });
+	});
 }
 
 #[bench]
