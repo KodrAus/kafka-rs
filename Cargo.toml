@@ -4,9 +4,13 @@ version = "0.1.0"
 authors = ["Ashley Mannix <ashleymannix@live.com.au>"]
 
 [dependencies]
-mio = "0.4.1"
-bytes = { git = "https://github.com/carllerche/bytes" }
-slab = "0.1.0"
+mio = "*"
+slab = "*"
+bytes = "*"
+
+serde = "*"
+
+bincode = "*"
 
 [features]
 default = []

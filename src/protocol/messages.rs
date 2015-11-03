@@ -1,10 +1,10 @@
-use std::io::{ Error, ErrorKind };
+extern crate bincode;
 
 use ::serialisation::*;
 
 /// A standard Kafka message format for both requests and responses in protocol APIs to implement.
 /// The ApiMessage type is also the right trait for you to implement on your custom event types.
-pub trait ApiMessage: ToBytes + FromBytes {
+pub trait ApiMessage {
 	fn get_key(&self) -> i32;
 	fn new() -> Self where Self: Sized;
 }
@@ -30,25 +30,6 @@ impl <T: ApiMessage> ApiRequestMessage<T> {
 	}
 }
 
-impl <T: ApiMessage> ToBytes for ApiRequestMessage<T> {
-	fn to_bytes(&self) -> &[u8] {
-		//TODO: Implement
-		&[]
-	}
-}
-
-impl <T: ApiMessage> FromBytes for ApiRequestMessage<T> {
-	fn from_bytes(bytes: &[u8]) -> Result<ApiRequestMessage<T>, Error> {
-		let mut req = ApiRequestMessage::<T>::new();
-
-		//Deserialise the ApiRequestMessage component
-		//Deserialise the T component
-
-		//TODO: Implement
-		Ok(req)
-	}
-}
-
 /// The standard structure of all Kafka responses. API-specific detail is provided by the response parameter
 pub struct ApiResponseMessage<T: ApiMessage> {
 	pub correlation_id: i32,
@@ -61,25 +42,6 @@ impl <T: ApiMessage> ApiResponseMessage<T> {
 			correlation_id: 1,
 			response: T::new()
 		}
-	}
-}
-
-impl <T: ApiMessage> ToBytes for ApiResponseMessage<T> {
-	fn to_bytes(&self) -> &[u8] {
-		//TODO: Implement
-		&[]
-	}
-}
-
-impl <T: ApiMessage> FromBytes for ApiResponseMessage<T> {
-	fn from_bytes(bytes: &[u8]) -> Result<ApiResponseMessage<T>, Error> {
-		let mut res = ApiResponseMessage::<T>::new();
-
-		//Deserialise the ApiResponseMessage component
-		//Deserialise the T component
-
-		//TODO: Implement
-		Ok(res)
 	}
 }
 
@@ -108,24 +70,5 @@ impl <T: ApiMessage> ApiMessage for MessageSet<T> {
 			message_size: 0,
 			messages: Vec::new()
 		}
-	}
-}
-
-impl <T: ApiMessage> ToBytes for MessageSet<T> {
-	fn to_bytes(&self) -> &[u8] {
-		//TODO: Implement
-		&[]
-	}
-}
-
-impl <T: ApiMessage> FromBytes for MessageSet<T> {
-	fn from_bytes(bytes: &[u8]) -> Result<MessageSet<T>, Error> {
-		let mut res = MessageSet::<T>::new();
-
-		//Deserialise the MessageSet component
-		//Deserialise the Messages components
-
-		//TODO: Implement
-		Ok(res)
 	}
 }
