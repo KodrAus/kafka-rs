@@ -3,7 +3,7 @@ extern crate kafka;
 
 use std::io::Error;
 
-use rustc_serialize::{ RustcEncodable, RustcDecodable };
+use rustc_serialize::{ Encodable, Decodable };
 
 use kafka::serialisation::*;
 use kafka::protocol::*;

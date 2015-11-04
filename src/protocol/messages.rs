@@ -1,12 +1,12 @@
 extern crate rustc_serialize;
 
-use rustc_serialize::{ RustcEncodable, RustcDecodable };
+use rustc_serialize::{ Encodable, Decodable };
 
 use ::serialisation::*;
 
 /// A standard Kafka message format for both requests and responses in protocol APIs to implement.
 /// The ApiMessage type is also the right trait for you to implement on your custom event types.
-pub trait ApiMessage: RustcEncodable + RustcDecodable {
+pub trait ApiMessage: Encodable + Decodable {
 	fn get_key(&self) -> i32;
 }
 

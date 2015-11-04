@@ -1,3 +1,6 @@
+extern crate rustc_serialize;
+
+#[derive(RustcEncodable, RustcDecodable)]
 pub enum Compression {
 	None,
 	Gzip,
