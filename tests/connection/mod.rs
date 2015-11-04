@@ -11,7 +11,7 @@ use kafka::connection::ConnectionMessage;
 use ::fixtures::*;
 
 //Receives a request message and sends a response message with the same correlation id
-//This could use the generic to_bytes and from_bytes methods, but for this test doesn't bother
+//This could use the generic serialisation methods, but for this test it doesn't matter
 fn respond(req: ConnectionMessage<MyRequest, MyResponse>) -> Result<ConnectionMessage<MyRequest, MyResponse>, Error> {
 	match req {
 		ConnectionMessage::Request::<MyRequest, MyResponse>(tx, req) => {

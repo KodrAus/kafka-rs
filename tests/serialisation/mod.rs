@@ -1,6 +1,9 @@
+extern crate bincode;
 extern crate kafka;
 
 use std::io::Error;
+
+use bincode::rustc_serialize::{ encode, decode };
 
 use kafka::serialisation::*;
 use kafka::protocol::*;
@@ -8,11 +11,12 @@ use kafka::protocol::*;
 use ::fixtures::*;
 
 //Generic methods to serialise and deserialise messages without knowing their exact type
+//TODO: Get these to compile using bincode serialisation
 fn serialise<T: ToBytes>(data: &T) -> &[u8] {
-	data.to_bytes()
+	encode(data).unwrap()
 }
 fn deserialise<T: FromBytes>(bytes: &[u8]) -> Result<T, Error> {
-	T::from_bytes(bytes)
+	decode(bytes)
 }
 
 #[test]

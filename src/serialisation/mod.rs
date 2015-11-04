@@ -3,3 +3,5 @@ pub enum Compression {
 	Gzip,
 	Snappy
 }
+
+//TODO: Encapsulate serialisation once the API is proven

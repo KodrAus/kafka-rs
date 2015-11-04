@@ -8,7 +8,6 @@ use ::serialisation::*;
 /// The ApiMessage type is also the right trait for you to implement on your custom event types.
 pub trait ApiMessage: RustcEncodable + RustcDecodable {
 	fn get_key(&self) -> i32;
-	fn new() -> Self where Self: Sized;
 }
 
 /// The standard structure of all Kafka requests. API-specific detail is provided by the request parameter
@@ -21,32 +20,11 @@ pub struct ApiRequestMessage<T: ApiMessage> {
 	pub request: T
 }
 
-impl <T: ApiMessage> ApiRequestMessage<T> {
-	fn new() -> ApiRequestMessage<T> {
-		ApiRequestMessage {
-			api_key: 1,
-			api_version: 1,
-			correlation_id: 1,
-			client_id: "".to_string(),
-			request: T::new()
-		}
-	}
-}
-
 /// The standard structure of all Kafka responses. API-specific detail is provided by the response parameter
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct ApiResponseMessage<T: ApiMessage> {
 	pub correlation_id: i32,
 	pub response: T
-}
-
-impl <T: ApiMessage> ApiResponseMessage<T> {
-	fn new() -> ApiResponseMessage<T> {
-		ApiResponseMessage {
-			correlation_id: 1,
-			response: T::new()
-		}
-	}
 }
 
 //TODO: Hide concerns that aren't necessary for the user to worry about
@@ -69,12 +47,4 @@ pub struct MessageSet<T: ApiMessage> {
 
 impl <T: ApiMessage> ApiMessage for MessageSet<T> {
 	fn get_key(&self) -> i32 { 0 }
-
-	fn new() -> MessageSet<T> {
-		MessageSet::<T> {
-			offset: 0,
-			message_size: 0,
-			messages: Vec::new()
-		}
-	}
 }
