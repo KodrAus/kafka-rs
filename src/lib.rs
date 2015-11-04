@@ -1,7 +1,7 @@
 #![feature(custom_derive, plugin)]
 #![allow(unstable)]
 extern crate bincode;
-extern crate serde;
+extern crate rustc_serialize;
 extern crate mio;
 
 pub mod connection;

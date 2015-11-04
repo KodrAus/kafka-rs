@@ -8,8 +8,7 @@ mio = "*"
 slab = "*"
 bytes = "*"
 
-serde = "*"
-
+rustc-serialize = "*"
 bincode = "*"
 
 [features]
