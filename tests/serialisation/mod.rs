@@ -1,22 +1,21 @@
 extern crate bincode;
 extern crate kafka;
 
-use std::io::Error;
+use rustc_serialize::{ Encodable, Decodable };
 
-use bincode::rustc_serialize::{ encode, decode };
+use bincode::SizeLimit;
+use bincode::rustc_serialize::{ encode, decode, DecodingError };
 
-use kafka::serialisation::*;
 use kafka::protocol::*;
 
 use ::fixtures::*;
 
 //Generic methods to serialise and deserialise messages without knowing their exact type
-//TODO: Get these to compile using bincode serialisation
-fn serialise<T: ToBytes>(data: &T) -> &[u8] {
-	encode(data).unwrap()
+fn serialise<T: Encodable>(data: &T) -> Vec<u8> {
+	encode(data, SizeLimit::Infinite).unwrap()
 }
-fn deserialise<T: FromBytes>(bytes: &[u8]) -> Result<T, Error> {
-	decode(bytes)
+fn deserialise<T: Decodable>(bytes: &[u8]) -> Result<T, DecodingError> {
+	decode::<T>(bytes)
 }
 
 #[test]
@@ -55,8 +54,8 @@ fn can_serialise_and_deserialise_api_requests() {
 	};
 
 	//Serialise the request and then deserialise
-	let bytes = req.to_bytes();
-	let des_req = ApiRequestMessage::<MyRequest>::from_bytes(&bytes).unwrap();
+	let bytes = serialise(&req);
+	let des_req = deserialise::<ApiRequestMessage<MyRequest>>(&bytes[..]).unwrap();
 
 	assert!(req.request.content == des_req.request.content);
 }

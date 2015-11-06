@@ -1,3 +1,4 @@
+#![feature(slice_patterns)]
 #![feature(custom_derive, plugin)]
 
 extern crate bincode;

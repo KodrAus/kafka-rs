@@ -1,11 +1,6 @@
 extern crate rustc_serialize;
 extern crate kafka;
 
-use std::io::Error;
-
-use rustc_serialize::{ Encodable, Decodable };
-
-use kafka::serialisation::*;
 use kafka::protocol::*;
 
 //We have a message that implements the kafka message traits
