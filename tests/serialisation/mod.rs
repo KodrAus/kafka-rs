@@ -19,27 +19,6 @@ fn deserialise<T: Decodable>(bytes: &[u8]) -> Result<T, DecodingError> {
 }
 
 #[test]
-fn can_call_to_bytes_on_generic_type() {
-	//Create a request
-	let msg = MyRequest {
-		id: 1,
-		content: "some content".to_string()
-	};
-
-	//Serialise the request
-	let _ = serialise(&msg);
-}
-
-#[test]
-fn can_call_from_bytes_on_generic_type() {
-	//Create some bytes (no bytes 4 u)
-	let bytes: [u8; 0] = [];
-
-	//Deserialise to a response
-	let _ = deserialise::<MyResponse>(&bytes);
-}
-
-#[test]
 fn can_serialise_and_deserialise_api_requests() {
 	//Create a request object
 	let req = ApiRequestMessage { 
