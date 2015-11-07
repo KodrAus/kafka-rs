@@ -14,6 +14,4 @@ bincode = "*"
 [features]
 default = []
 
-test-integration = [
-
-]
+test-integration = []
