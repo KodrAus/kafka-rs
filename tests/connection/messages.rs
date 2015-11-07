@@ -2,13 +2,24 @@ extern crate kafka;
 
 use std::sync::Arc;
 use std::sync::mpsc;
+use std::sync::mpsc::{ Sender };
 use std::thread;
 use std::io::Error;
 
 use kafka::protocol::*;
-use kafka::connection::ConnectionMessage;
 
 use ::fixtures::*;
+
+//A simple strongly-typed enum to represent a request/response state transition
+pub enum ConnectionMessage<Req: ApiMessage, Res: ApiMessage> {
+	/// An asynchronous Kafka request
+	Request(
+		Sender<Arc<ApiResponseMessage<Res>>>,
+		ApiRequestMessage<Req>
+	),
+	/// An asynchronous Kafka response
+	Response(Arc<ApiResponseMessage<Res>>)
+}
 
 //Receives a request message and sends a response message with the same correlation id
 //This could use the generic serialisation methods, but for this test it doesn't matter

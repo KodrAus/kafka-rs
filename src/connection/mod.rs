@@ -9,15 +9,12 @@ pub mod tcp {
 use std::sync::Arc;
 use std::sync::mpsc::{ Sender };
 
-use ::protocol::{ ApiMessage, ApiRequestMessage, ApiResponseMessage };
-
-/// The low-level message that a connection will receive and process
-pub enum ConnectionMessage<Req: ApiMessage, Res: ApiMessage> {
-	/// An asynchronous Kafka request
+/// The low-level message that a connection on the event loop will accept
+pub enum SerialisedConnectionMessage {
 	Request(
-		Sender<Arc<ApiResponseMessage<Res>>>,
-		ApiRequestMessage<Req>
+		Sender<Arc<Vec<u8>>>,
+		Arc<Vec<u8>>
 	),
-	/// An asynchronous Kafka response
-	Response(Arc<ApiResponseMessage<Res>>)
+	Execute(Vec<u8>),
+	Response(Arc<Vec<u8>>)
 }
