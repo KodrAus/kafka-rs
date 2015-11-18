@@ -1,22 +1,10 @@
 extern crate bincode;
 extern crate kafka;
 
-use rustc_serialize::{ Encodable, Decodable };
-
-use bincode::SizeLimit;
-use bincode::rustc_serialize::{ encode, decode, DecodingError };
-
 use kafka::protocol::*;
+use kafka::serialisation::{ serialise, deserialise };
 
 use ::fixtures::*;
-
-//Generic methods to serialise and deserialise messages without knowing their exact type
-fn serialise<T: Encodable>(data: &T) -> Vec<u8> {
-	encode(data, SizeLimit::Infinite).unwrap()
-}
-fn deserialise<T: Decodable>(bytes: &[u8]) -> Result<T, DecodingError> {
-	decode::<T>(bytes)
-}
 
 #[test]
 fn can_serialise_and_deserialise_api_requests() {
@@ -33,8 +21,8 @@ fn can_serialise_and_deserialise_api_requests() {
 	};
 
 	//Serialise the request and then deserialise
-	let bytes = serialise(&req);
-	let des_req = deserialise::<ApiRequestMessage<MyRequest>>(&bytes[..]).unwrap();
+	let bytes = serialise(&req).unwrap();
+	let des_req = deserialise::<ApiRequestMessage<MyRequest>>(bytes).unwrap();
 
 	assert!(req.request.content == des_req.request.content);
 }

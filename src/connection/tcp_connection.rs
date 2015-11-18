@@ -1,12 +1,10 @@
 extern crate mio;
 
-use mio::{ Token, EventLoop, Handler };
+use mio::{ Handler };
 
 use super::{ SerialisedConnectionMessage };
 
-pub struct TcpConnection {
-	token: Token
-}
+pub struct TcpConnection;
 
 impl Handler for TcpConnection {
 	type Timeout = ();

@@ -11,6 +11,8 @@ bytes = "*"
 rustc-serialize = "*"
 bincode = "*"
 
+stopwatch = "*"
+
 [features]
 default = []
 

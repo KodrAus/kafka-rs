@@ -1,5 +1,6 @@
 extern crate bincode;
 extern crate rustc_serialize;
+extern crate stopwatch;
 extern crate kafka;
 
 pub mod fixtures;
