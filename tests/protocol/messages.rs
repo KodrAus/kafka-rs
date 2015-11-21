@@ -82,3 +82,23 @@ fn message_set_should_take_message_sets_in_vec() {
 		]
 	};
 }
+
+#[test]
+fn request_response_message_contains_message_size() {
+	//Create a request
+	let req = ApiRequestMessage { 
+		request: MyRequest { 
+			id: 1, 
+			content: "my request content".to_string() 
+		}, 
+		api_key: 1,
+		api_version: 1,
+		correlation_id: 1,
+		client_id: "some id".to_string()
+	};
+
+	//Wrap the request in the standard req/res format
+	let msg = RequestResponseMessage::new(&req);
+
+	assert!(msg.size > 0);
+}

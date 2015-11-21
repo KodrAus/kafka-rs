@@ -31,11 +31,3 @@ fn read_from_tcp_connection(b: &mut Bencher) {
 
 	});
 }
-
-#[bench]
-#[cfg(feature="test-integration")]
-fn it_works_integration(b: &mut Bencher) {
-	b.iter(|| {
-
-	});
-}

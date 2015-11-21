@@ -6,7 +6,9 @@ use ::serialisation::*;
 
 /// A standard Kafka message format for both requests and responses in protocol APIs to implement.
 /// The ApiMessage type is also the right trait for you to implement on your custom event types.
-pub trait ApiMessage: Encodable + Decodable {
+pub trait ApiMessage: Encodable + Decodable { }
+
+pub trait HasKey {
 	fn get_key(&self) -> i32;
 }
 
@@ -20,12 +22,16 @@ pub struct ApiRequestMessage<T: ApiMessage> {
 	pub request: T
 }
 
+impl <T: ApiMessage> ApiMessage for ApiRequestMessage<T> { }
+
 /// The standard structure of all Kafka responses. API-specific detail is provided by the response parameter
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct ApiResponseMessage<T: ApiMessage> {
 	pub correlation_id: i32,
 	pub response: T
 }
+
+impl <T: ApiMessage> ApiMessage for ApiResponseMessage<T> { }
 
 //TODO: Hide concerns that aren't necessary for the user to worry about
 #[derive(RustcEncodable, RustcDecodable)]
@@ -45,6 +51,23 @@ pub struct MessageSet<T: ApiMessage> {
 	pub messages: Vec<Message<T>>
 }
 
-impl <T: ApiMessage> ApiMessage for MessageSet<T> {
-	fn get_key(&self) -> i32 { 0 }
+impl <T: ApiMessage> ApiMessage for MessageSet<T> { }
+
+pub struct RequestResponseMessage {
+	pub size: u32,
+	pub bytes: Vec<u8>
+}
+
+impl RequestResponseMessage {
+	pub fn new<T: ApiMessage>(msg: &T) -> RequestResponseMessage {
+		let bytes = match serialise(&msg) {
+			Ok(b) => b,
+			Err(e) => panic!("failed to serialise message")
+		};
+
+		RequestResponseMessage {
+			size: bytes.len() as u32,
+			bytes: bytes
+		}
+	}
 }

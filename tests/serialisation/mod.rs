@@ -26,3 +26,8 @@ fn can_serialise_and_deserialise_api_requests() {
 
 	assert!(req.request.content == des_req.request.content);
 }
+
+#[test]
+fn serialising_request_response_message_should_append_size_to_front() {
+	panic!("implement")
+}

@@ -11,6 +11,7 @@ use bincode::SizeLimit;
 use bincode::rustc_serialize::{ encode, decode, DecodingError };
 
 use kafka::protocol::*;
+use kafka::serialisation::{ serialise, deserialise };
 
 use test::Bencher;
 
@@ -38,13 +39,6 @@ impl ApiMessage for MyResponse {
 	}
 }
 
-fn serialise<T: Encodable>(data: &T) -> Vec<u8> {
-	encode(data, SizeLimit::Infinite).unwrap()
-}
-fn deserialise<T: Decodable>(bytes: &[u8]) -> Result<T, DecodingError> {
-	decode::<T>(bytes)
-}
-
 #[bench]
 fn serialise_deserialise_api_request(b: &mut Bencher) {
 	let req = ApiRequestMessage { 
@@ -59,7 +53,9 @@ fn serialise_deserialise_api_request(b: &mut Bencher) {
 	};
 
 	b.iter(||{
-		let _ = deserialise::<ApiRequestMessage<MyRequest>>(&serialise(&req)[..]).unwrap();
+		let _ = deserialise::<ApiRequestMessage<MyRequest>>(
+			serialise(&req).unwrap()
+		).unwrap();
 	});
 }
 
@@ -74,6 +70,8 @@ fn serialise_deserialise_api_response(b: &mut Bencher) {
 	};
 
 	b.iter(||{
-		let _ = deserialise::<ApiResponseMessage<MyResponse>>(&serialise(&res)[..]).unwrap();
+		let _ = deserialise::<ApiResponseMessage<MyResponse>>(
+			serialise(&res).unwrap()
+		).unwrap();
 	});
 }

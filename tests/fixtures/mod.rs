@@ -3,6 +3,8 @@ extern crate kafka;
 
 use kafka::protocol::*;
 
+pub mod broker;
+
 //We have a message that implements the kafka message traits
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct MyRequest {
@@ -10,7 +12,8 @@ pub struct MyRequest {
 	pub content: String
 }
 
-impl ApiMessage for MyRequest {
+impl ApiMessage for MyRequest { }
+impl HasKey for MyRequest {
 	fn get_key(&self) -> i32 {
 		self.id
 	}
@@ -22,7 +25,8 @@ pub struct MyResponse {
 	pub content: String
 }
 
-impl ApiMessage for MyResponse {
+impl ApiMessage for MyResponse { }
+impl HasKey for MyResponse {
 	fn get_key(&self) -> i32 {
 		self.id
 	}
@@ -35,6 +39,4 @@ pub enum MyMessage<T: ApiMessage> {
 	MessageSet(MessageSet<T>)
 }
 
-impl <T: ApiMessage> ApiMessage for MyMessage<T> {
-	fn get_key(&self) -> i32 { 0 }
-}
+impl <T: ApiMessage> ApiMessage for MyMessage<T> { }
