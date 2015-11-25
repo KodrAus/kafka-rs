@@ -1,10 +1,10 @@
-extern crate bincode;
 extern crate rustc_serialize;
 
-use bincode::SizeLimit;
-use bincode::rustc_serialize::{ encode, decode };
-
 use rustc_serialize::{ Encodable, Decodable };
+
+mod rustc_serialize_impl;
+
+use rustc_serialize_impl::*;
 
 pub type EncodingResult<T> = bincode::rustc_serialize::EncodingResult<T>;
 pub type DecodingResult<T> = bincode::rustc_serialize::DecodingResult<T>;

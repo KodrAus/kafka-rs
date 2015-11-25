@@ -9,7 +9,6 @@ slab = "*"
 bytes = "*"
 
 rustc-serialize = "*"
-bincode = "*"
 
 stopwatch = "*"
 

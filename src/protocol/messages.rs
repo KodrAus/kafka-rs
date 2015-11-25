@@ -1,12 +1,14 @@
 extern crate rustc_serialize;
 
-use rustc_serialize::{ Encodable, Decodable };
+use std::any::Any;
+
+use rustc_serialize::{ Encodable, Decodable, Encoder, Decoder };
 
 use ::serialisation::*;
 
 /// A standard Kafka message format for both requests and responses in protocol APIs to implement.
 /// The ApiMessage type is also the right trait for you to implement on your custom event types.
-pub trait ApiMessage: Encodable + Decodable { }
+pub trait ApiMessage: Encodable + Decodable + Any { }
 
 pub trait HasKey {
 	fn get_key(&self) -> i32;
@@ -70,4 +72,36 @@ impl RequestResponseMessage {
 			bytes: bytes
 		}
 	}
+}
+
+impl Encodable for RequestResponseMessage {
+	fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
+		//Emit the length as 4 bytes
+		s.emit_u32(self.size);
+
+		//Emit the contents of the byte array
+		for (i, e) in self.bytes.iter().enumerate() {
+            try!(s.emit_seq_elt(i, |s| s.emit_u8(*e)));
+        }
+
+        Ok(())
+	}
+}
+
+impl Decodable for RequestResponseMessage {
+	fn decode<D: Decoder>(d: &mut D) -> Result<RequestResponseMessage, D::Error> {
+		//TODO: Make this work
+        d.read_seq(|d, len| {
+        	//Decode the vec
+            let mut v = Vec::with_capacity(len);
+            for i in 0..len {
+                v.push(try!(d.read_seq_elt(i, |d| Decodable::decode(d))));
+            }
+
+            Ok(RequestResponseMessage {
+            	size: len as u32,
+            	bytes: v
+            })
+        })
+    }
 }

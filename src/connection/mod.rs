@@ -1,10 +1,4 @@
-pub mod tcp_connection;
-pub mod tcp_pump;
-
-pub mod tcp {
-	pub use super::tcp_pump;
-	pub use super::tcp_connection;
-}
+pub mod tcp;
 
 use std::sync::mpsc::{ Sender };
 
