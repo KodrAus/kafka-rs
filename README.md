@@ -2,6 +2,8 @@
 
 Very early attempt at building an [Apache Kafka](http://kafka.apache.org/) client in [Rust](https://www.rust-lang.org/)
 
+Currently does not even build. Watch this space :)
+
 ## Goals
 
 To provide an asynchronous, high-level, strongly-typed, well tested and intuitive Kafka driver in Rust. The aim is to support two main use-cases with Kafka:
