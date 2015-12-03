@@ -1,35 +1,33 @@
 //Stolen from https://github.com/TyOverby/bincode
 //This has been imported for change mainly because of annoying differences between what Kafka expects and what bincode does
 
-//! A collection of serialization and deserialization functions
-//! that use the `rustc_serialize` crate for the encodable and decodable
-//! implementation.
+extern crate bincode;
 
-use rustc_serialize_crate::{Encodable, Decodable};
-use std::io::{Write, Read};
-use ::SizeLimit;
+use std::io::{ Write, Read };
 
-pub use self::writer::{SizeChecker, EncoderWriter, EncodingResult, EncodingError};
-pub use self::reader::{DecoderReader, DecodingResult, DecodingError};
+use rustc_serialize::{ Encodable, Decodable };
+use bincode::SizeLimit;
+use bincode::rustc_serialize::SizeChecker;
+
+pub use self::writer::{ EncoderWriter, EncodingResult, EncodingError };
+pub use self::reader::{ DecoderReader, DecodingResult, DecodingError };
 
 mod reader;
 mod writer;
+
+pub fn usize_as_u32(u: usize) -> u32 {
+    u as u32
+}
 
 /// Encodes an encodable object into a `Vec` of bytes.
 ///
 /// If the encoding would take more bytes than allowed by `size_limit`,
 /// an error is returned.
-pub fn encode<T: Encodable>(t: &T, size_limit: SizeLimit) -> EncodingResult<Vec<u8>> {
+pub fn encode<T: Encodable>(t: &T) -> EncodingResult<Vec<u8>> {
     // Since we are putting values directly into a vector, we can do size
     // computation out here and pre-allocate a buffer of *exactly*
     // the right size.
-    let mut w = if let SizeLimit::Bounded(l) = size_limit {
-        let actual_size = encoded_size_bounded(t, l);
-        let actual_size = try!(actual_size.ok_or(EncodingError::SizeLimit));
-        Vec::with_capacity(actual_size as usize)
-    } else {
-        vec![]
-    };
+    let mut w = vec![];
 
     match encode_into(t, &mut w, SizeLimit::Infinite) {
         Ok(()) => Ok(w),
@@ -81,7 +79,6 @@ pub fn encode_into<T: Encodable, W: Write>(t: &T,
 pub fn decode_from<R: Read, T: Decodable>(r: &mut R, size_limit: SizeLimit) -> DecodingResult<T> {
     Decodable::decode(&mut reader::DecoderReader::new(r, size_limit))
 }
-
 
 /// Returns the size that an object would be if encoded using bincode.
 ///

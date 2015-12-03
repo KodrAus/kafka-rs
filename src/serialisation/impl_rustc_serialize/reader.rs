@@ -1,14 +1,17 @@
+extern crate rustc_serialize;
+extern crate bincode;
+
 use std::io::Read;
 use std::io::Error as IoError;
 use std::error::Error;
 use std::fmt;
 use std::convert::From;
 
-use rustc_serialize_crate::Decoder;
+use rustc_serialize::Decoder;
+use bincode::SizeLimit;
 
-use byteorder::{BigEndian, ReadBytesExt};
+use byteorder::{ BigEndian, ReadBytesExt };
 use byteorder::Error as ByteOrderError;
-use ::SizeLimit;
 
 #[derive(Eq, PartialEq, Clone, Debug)]
 pub struct InvalidEncoding {
@@ -59,19 +62,6 @@ impl fmt::Display for DecodingError {
     }
 }
 
-pub type DecodingResult<T> = Result<T, DecodingError>;
-
-fn wrap_io(err: ByteOrderError) -> DecodingError {
-    match err {
-        ByteOrderError::Io(ioe) => DecodingError::IoError(ioe),
-        ByteOrderError::UnexpectedEOF =>
-            DecodingError::InvalidEncoding(InvalidEncoding {
-                desc: "Unexpected EOF while reading a multi-byte number",
-                detail: None
-            })
-    }
-}
-
 impl Error for DecodingError {
     fn description(&self) -> &str {
         match *self {
@@ -93,6 +83,19 @@ impl Error for DecodingError {
 impl From<IoError> for DecodingError {
     fn from(err: IoError) -> DecodingError {
         DecodingError::IoError(err)
+    }
+}
+
+pub type DecodingResult<T> = Result<T, DecodingError>;
+
+fn wrap_io(err: ByteOrderError) -> DecodingError {
+    match err {
+        ByteOrderError::Io(ioe) => DecodingError::IoError(ioe),
+        ByteOrderError::UnexpectedEOF =>
+            DecodingError::InvalidEncoding(InvalidEncoding {
+                desc: "Unexpected EOF while reading a multi-byte number",
+                detail: None
+            })
     }
 }
 
@@ -335,8 +338,8 @@ impl<'a, R: Read> Decoder for DecoderReader<'a, R> {
     fn read_seq<T, F>(&mut self, f: F) -> DecodingResult<T>
         where F: FnOnce(&mut DecoderReader<'a, R>, usize) -> DecodingResult<T>
     {
-        let len = try!(self.read_usize());
-        f(self, len)
+        let len = try!(self.read_u32());
+        f(self, len as usize)
     }
     fn read_seq_elt<T, F>(&mut self, _: usize, f: F) -> DecodingResult<T>
         where F: FnOnce(&mut DecoderReader<'a, R>) -> DecodingResult<T>
@@ -346,8 +349,8 @@ impl<'a, R: Read> Decoder for DecoderReader<'a, R> {
     fn read_map<T, F>(&mut self, f: F) -> DecodingResult<T>
         where F: FnOnce(&mut DecoderReader<'a, R>, usize) -> DecodingResult<T>
     {
-        let len = try!(self.read_usize());
-        f(self, len)
+        let len = try!(self.read_u32());
+        f(self, len as usize)
     }
     fn read_map_elt_key<T, F>(&mut self, _: usize, f: F) -> DecodingResult<T>
         where F: FnOnce(&mut DecoderReader<'a, R>) -> DecodingResult<T>

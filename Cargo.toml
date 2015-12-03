@@ -9,6 +9,8 @@ slab = "*"
 bytes = "*"
 
 rustc-serialize = "*"
+bincode = "*"
+byteorder = "*"
 
 stopwatch = "*"
 

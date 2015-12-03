@@ -2,12 +2,11 @@ extern crate rustc_serialize;
 
 use rustc_serialize::{ Encodable, Decodable };
 
-mod rustc_serialize_impl;
+mod impl_rustc_serialize;
+use self::impl_rustc_serialize::*;
 
-use rustc_serialize_impl::*;
-
-pub type EncodingResult<T> = bincode::rustc_serialize::EncodingResult<T>;
-pub type DecodingResult<T> = bincode::rustc_serialize::DecodingResult<T>;
+pub type EncodingResult<T> = impl_rustc_serialize::EncodingResult<T>;
+pub type DecodingResult<T> = impl_rustc_serialize::DecodingResult<T>;
 
 #[derive(RustcEncodable, RustcDecodable)]
 pub enum Compression {
@@ -17,7 +16,7 @@ pub enum Compression {
 }
 
 pub fn serialise<T: Encodable>(data: &T) -> EncodingResult<Vec<u8>> {
-	encode(data, SizeLimit::Infinite)
+	encode(data)
 }
 
 pub fn deserialise<T: Decodable>(bytes: Vec<u8>) -> DecodingResult<T> {
