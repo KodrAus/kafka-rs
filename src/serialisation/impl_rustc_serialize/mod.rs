@@ -4,11 +4,9 @@
 extern crate bincode;
 
 use std::io::{ Write, Read };
-
 use rustc_serialize::{ Encodable, Decodable };
 use bincode::SizeLimit;
 use bincode::rustc_serialize::SizeChecker;
-
 pub use self::writer::{ EncoderWriter, EncodingResult, EncodingError };
 pub use self::reader::{ DecoderReader, DecodingResult, DecodingError };
 

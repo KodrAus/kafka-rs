@@ -1,7 +1,6 @@
 extern crate kafka;
 
 use std::sync::mpsc;
-
 use kafka::connection::*;
 use kafka::serialisation::{ serialise };
 

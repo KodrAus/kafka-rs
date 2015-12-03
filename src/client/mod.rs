@@ -2,16 +2,13 @@ extern crate mio;
 
 pub mod response_handle;
 
-pub use self::response_handle::*;
-
 use std::sync::mpsc;
 use std::any::Any;
-
 use mio::Sender;
-
 use ::connection::BufferedConnectionMessage;
 use ::protocol::{ RequestResponseMessage, ApiMessage, ApiRequestMessage, ApiResponseMessage };
 use ::serialisation::{ serialise, deserialise };
+pub use self::response_handle::*;
 
 pub struct Client {
 	app: String,

@@ -1,8 +1,8 @@
 extern crate rustc_serialize;
 
-use rustc_serialize::{ Encodable, Decodable };
-
 mod impl_rustc_serialize;
+
+use rustc_serialize::{ Encodable, Decodable };
 use self::impl_rustc_serialize::*;
 
 pub type EncodingResult<T> = impl_rustc_serialize::EncodingResult<T>;

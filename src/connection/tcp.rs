@@ -2,11 +2,9 @@ extern crate mio;
 
 use std::io::Cursor;
 use std::mem;
-
 use mio::{ Handler, EventLoop, Token, EventSet };
 use mio::util::Slab;
 use mio::tcp::TcpStream;
-
 use super::{ BufferedConnectionMessage };
 
 //The main io loop for clients to interact with

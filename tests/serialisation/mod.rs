@@ -3,7 +3,6 @@ extern crate kafka;
 
 use kafka::protocol::*;
 use kafka::serialisation::{ serialise, deserialise };
-
 use ::fixtures::*;
 
 #[test]

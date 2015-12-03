@@ -4,7 +4,6 @@ extern crate bincode;
 use std::io::Write;
 use std::io::Error as IoError;
 use std::io::ErrorKind as IoErrorKind;
-
 use rustc_serialize::Encoder;
 pub use bincode::rustc_serialize::EncodingError;
 use byteorder::{ BigEndian, WriteBytesExt };

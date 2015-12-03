@@ -6,10 +6,8 @@ use std::io::Error as IoError;
 use std::error::Error;
 use std::fmt;
 use std::convert::From;
-
 use rustc_serialize::Decoder;
 use bincode::SizeLimit;
-
 use byteorder::{ BigEndian, ReadBytesExt };
 use byteorder::Error as ByteOrderError;
 

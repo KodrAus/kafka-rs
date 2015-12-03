@@ -1,5 +1,4 @@
 use std::sync::mpsc::{ Receiver };
-
 use ::protocol::messages::ApiMessage;
 use ::serialisation::deserialise;
 

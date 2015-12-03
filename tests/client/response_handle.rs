@@ -5,13 +5,10 @@ use std::sync::mpsc;
 use std::thread;
 use std::io::Error;
 use std::time::Duration;
-
 use stopwatch::{ Stopwatch };
-
 use kafka::protocol::*;
 use kafka::connection::*;
 use kafka::serialisation::serialise;
-
 use ::fixtures::*;
 
 const WAIT: u64 = 500;

@@ -1,9 +1,7 @@
 extern crate rustc_serialize;
 
 use std::any::Any;
-
 use rustc_serialize::{ Encodable, Decodable, Encoder, Decoder };
-
 use ::serialisation::*;
 
 /// A standard Kafka message format for both requests and responses in protocol APIs to implement.
@@ -74,6 +72,7 @@ impl RequestResponseMessage {
 	}
 }
 
+//TODO: Move this logic into the serialisation module
 impl Encodable for RequestResponseMessage {
 	fn encode<S: Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
 		//Emit the length as 4 bytes
