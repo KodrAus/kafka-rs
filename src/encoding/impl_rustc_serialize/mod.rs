@@ -7,15 +7,14 @@ use std::io::{ Write, Read };
 use rustc_serialize::{ Encodable, Decodable };
 use bincode::SizeLimit;
 use bincode::rustc_serialize::SizeChecker;
+use ::client::protocol::{ ApiMessage, ApiRequestMessage, ApiResponseMessage };
+
+pub use super::usize_as_u32;
 pub use self::writer::{ EncoderWriter, EncodingResult, EncodingError };
 pub use self::reader::{ DecoderReader, DecodingResult, DecodingError };
 
 mod reader;
 mod writer;
-
-pub fn usize_as_u32(u: usize) -> u32 {
-    u as u32
-}
 
 /// Encodes an encodable object into a `Vec` of bytes.
 ///
@@ -50,10 +49,7 @@ pub fn decode<T: Decodable>(b: &[u8]) -> DecodingResult<T> {
 /// If this returns an `EncodingError` (other than SizeLimit), assume that the
 /// writer is in an invalid state, as writing could bail out in the middle of
 /// encoding.
-pub fn encode_into<T: Encodable, W: Write>(t: &T,
-                                           w: &mut W,
-                                           size_limit: SizeLimit)
-                                           -> EncodingResult<()> {
+pub fn encode_into<T: Encodable, W: Write>(t: &T, w: &mut W, size_limit: SizeLimit) -> EncodingResult<()> {
     try!(match size_limit {
         SizeLimit::Infinite => Ok(()),
         SizeLimit::Bounded(x) => {

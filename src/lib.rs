@@ -7,6 +7,7 @@ extern crate byteorder;
 extern crate mio;
 
 pub mod client;
-pub mod connection;
-pub mod protocol;
-pub mod serialisation;
+pub mod encoding;
+pub mod conn;
+
+pub use client::protocol::ApiMessage;

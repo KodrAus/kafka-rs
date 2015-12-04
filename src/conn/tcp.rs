@@ -1,11 +1,13 @@
 extern crate mio;
+extern crate byteorder;
 
 use std::io::Cursor;
 use std::mem;
+
 use mio::{ Handler, EventLoop, Token, EventSet };
 use mio::util::Slab;
 use mio::tcp::TcpStream;
-use super::{ BufferedConnectionMessage };
+use super::{ ConnectionMessage };
 
 //The main io loop for clients to interact with
 pub struct ConnectionManager {
@@ -22,25 +24,25 @@ impl ConnectionManager {
 
 impl Handler for ConnectionManager {
 	type Timeout = ();
-	type Message = BufferedConnectionMessage;
+	type Message = ConnectionMessage;
 
 	fn notify(&mut self, event_loop: &mut EventLoop<ConnectionManager>, msg: Self::Message) {
 		match msg {
 			//Sent by clients
-			BufferedConnectionMessage::Request(sender, bytes) => {
+			ConnectionMessage::Request(sender, bytes) => {
 				//Find an available, compatible connection
 				//Store the sender against the connections token id
 				//Store the message with the connections token id
 				panic!("implement")
 			},
 			//Sent by clients
-			BufferedConnectionMessage::Execute(bytes) => {
+			ConnectionMessage::Execute(bytes) => {
 				//Find an available, compatible connection
 				//Store the message with the connections token id
 				panic!("implement")
 			},
 			//Sent by connections
-			BufferedConnectionMessage::Response(bytes) => {
+			ConnectionMessage::Response(bytes) => {
 				//Find a saved sender by token id
 				//If found, push bytes down channel
 				//If not found, ignore and move on
@@ -64,6 +66,7 @@ struct Connection {
 
 enum State {
 	Reading(Vec<u8>),
+	ReadingMessage(u32, Vec<u8>),
 	Writing(Cursor<Vec<u8>>),
 	Closed
 }

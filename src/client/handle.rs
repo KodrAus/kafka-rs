@@ -1,18 +1,18 @@
-use std::sync::mpsc::{ Receiver };
-use ::protocol::messages::ApiMessage;
-use ::serialisation::deserialise;
+use std::sync::mpsc::Receiver;
+use super::protocol::ApiMessage;
+use ::encoding::decode;
 
 enum ResponseHandleState<T: ApiMessage> {
-	WaitingOnResponse(Receiver<Vec<u8>>),
-	HaveResponse(T)
+	AwaitingResponse(Receiver<Vec<u8>>),
+	HasResponse(T)
 }
 
 impl <T: ApiMessage> ResponseHandleState<T> {
 	fn block_for_response(&self) -> Option<T> {
 		match *self {
-			ResponseHandleState::WaitingOnResponse(ref handle) => {
+			ResponseHandleState::AwaitingResponse(ref handle) => {
 				let bytes = handle.recv().unwrap();
-				let msg = deserialise::<T>(bytes).unwrap();
+				let msg = decode::<T>(bytes).unwrap();
 
 				Some(msg)
 			},
@@ -22,7 +22,7 @@ impl <T: ApiMessage> ResponseHandleState<T> {
 
 	fn get_cached_response(&self) -> Option<&T> {
 		match *self {
-			ResponseHandleState::HaveResponse(ref msg) => Some(msg),
+			ResponseHandleState::HasResponse(ref msg) => Some(msg),
 			_ => None
 		}
 	}
@@ -36,7 +36,7 @@ impl <T: ApiMessage> ResponseHandleState<T> {
 	}
 
 	fn transition_to_cached_response(&mut self, msg: T) {
-		*self = ResponseHandleState::HaveResponse(msg);
+		*self = ResponseHandleState::HasResponse(msg);
 	}
 }
 
@@ -50,7 +50,7 @@ pub struct ResponseHandle<T: ApiMessage> {
 impl <T: ApiMessage> ResponseHandle<T> {
 	pub fn new(rx: Receiver<Vec<u8>>) -> ResponseHandle<T> {
 		ResponseHandle {
-			state: ResponseHandleState::WaitingOnResponse(rx)
+			state: ResponseHandleState::AwaitingResponse(rx)
 		}
 	}
 

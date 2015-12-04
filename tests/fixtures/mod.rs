@@ -1,7 +1,7 @@
 extern crate rustc_serialize;
 extern crate kafka;
 
-use kafka::protocol::*;
+use kafka::client::protocol::*;
 
 pub mod broker;
 
