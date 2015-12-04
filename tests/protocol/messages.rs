@@ -42,7 +42,7 @@ fn can_get_message_from_api_response() {
 }
 
 #[test]
-fn message_set_should_take_message_sets_in_vec() {
+fn message_set_can_take_message_sets_in_vec() {
 	//TODO: Build a macro for this
 	//Shows how we can use an enum to wrap our message types and support multiple messages
 	let _ = MessageSet::<MyMessage<MyRequest>> {
