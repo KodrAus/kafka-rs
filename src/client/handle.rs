@@ -7,6 +7,12 @@ enum ResponseHandleState<T: ApiMessage> {
 	HasResponse(T)
 }
 
+enum ResponseMultiState {
+	SingleResonse,
+	SomeResponses(usize),
+	InfiniteResponses
+}
+
 impl <T: ApiMessage> ResponseHandleState<T> {
 	fn block_for_response(&self) -> Option<T> {
 		match *self {
@@ -27,16 +33,16 @@ impl <T: ApiMessage> ResponseHandleState<T> {
 		}
 	}
 
+	fn set_cached_response(&mut self, msg: T) {
+		*self = ResponseHandleState::HasResponse(msg);
+	}
+
 	pub fn get_response(&mut self) -> Option<&T> {
 		if let Some(msg) = self.block_for_response() {
-			self.transition_to_cached_response(msg);
+			self.set_cached_response(msg);
 		}
 
 		self.get_cached_response()
-	}
-
-	fn transition_to_cached_response(&mut self, msg: T) {
-		*self = ResponseHandleState::HasResponse(msg);
 	}
 }
 
