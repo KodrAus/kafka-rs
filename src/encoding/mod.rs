@@ -11,7 +11,7 @@ use ::client::protocol::{ ApiMessage, ApiRequestMessage };
 pub type EncodingResult<T> = impl_rustc_serialize::EncodingResult<T>;
 pub type DecodingResult<T> = impl_rustc_serialize::DecodingResult<T>;
 
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, Clone)]
 pub enum Compression {
 	None,
 	Gzip,

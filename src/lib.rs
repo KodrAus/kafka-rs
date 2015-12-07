@@ -1,5 +1,4 @@
-#![feature(slice_patterns)]
-#![feature(custom_derive, plugin)]
+#![feature(slice_patterns, custom_derive, plugin)]
 
 extern crate rustc_serialize;
 extern crate bincode;

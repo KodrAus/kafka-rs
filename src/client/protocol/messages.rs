@@ -6,14 +6,14 @@ use ::encoding::Compression;
 
 /// A standard Kafka message format for both requests and responses in protocol APIs to implement.
 /// The ApiMessage type is also the right trait for you to implement on your custom event types.
-pub trait ApiMessage: Encodable + Decodable + Any { }
+pub trait ApiMessage: Encodable + Decodable + Any + Clone { }
 
 pub trait HasKey {
 	fn get_key(&self) -> i32;
 }
 
 /// The standard structure of all Kafka requests. API-specific detail is provided by the request parameter
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, Clone)]
 pub struct ApiRequestMessage<T: ApiMessage> {
 	pub api_key: i16,
 	pub api_version: i16,
@@ -25,7 +25,7 @@ pub struct ApiRequestMessage<T: ApiMessage> {
 impl <T: ApiMessage> ApiMessage for ApiRequestMessage<T> { }
 
 /// The standard structure of all Kafka responses. API-specific detail is provided by the response parameter
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, Clone)]
 pub struct ApiResponseMessage<T: ApiMessage> {
 	pub correlation_id: i32,
 	pub response: T
@@ -33,7 +33,7 @@ pub struct ApiResponseMessage<T: ApiMessage> {
 
 impl <T: ApiMessage> ApiMessage for ApiResponseMessage<T> { }
 
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, Clone)]
 pub struct Message<T: ApiMessage> {
 	pub crc: i32,
 	pub magic_byte: i8,
@@ -43,7 +43,7 @@ pub struct Message<T: ApiMessage> {
 }
 
 /// A standard collection of kafka messages as a sequence of key-value pairs
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, Clone)]
 pub struct MessageSet<T: ApiMessage> {
 	pub offset: i64,
 	pub message_size: i32,

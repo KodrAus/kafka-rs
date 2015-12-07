@@ -3,8 +3,6 @@ extern crate kafka;
 
 use kafka::client::protocol::*;
 
-pub mod broker;
-
 //We have a message that implements the kafka message traits
 #[derive(RustcEncodable, RustcDecodable, Clone)]
 pub struct MyRequest {
