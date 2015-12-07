@@ -15,4 +15,4 @@ Both use-cases will build off a standard Kafka io base that will be suitable for
 
 ## Tests
 ### Integration
-Integration tests will require a running kafka broker on `localhost`. Integration tests are marked by the `test-integration` feature, and can be run with `cargo test --features test-integration`
+Integration tests will require a running kafka broker on `localhost`. Integration tests are marked by the `test-integration` feature, and can be run with `cargo test --features test-integration`. In source these have the `#[cfg(feature="integration")]` attribute.
