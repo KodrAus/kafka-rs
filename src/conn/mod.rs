@@ -1,4 +1,4 @@
-pub mod tcp;
+pub mod io_loop;
 
 use std::sync::mpsc::{ Sender };
 
@@ -11,5 +11,3 @@ pub enum ConnectionMessage {
 	Execute(Vec<u8>),
 	Response(Vec<u8>)
 }
-
-//Msg -> RequestMessage<Msg> -> RequestResponseMessage -> Vec<u8> -> ConnectionMessage::Request

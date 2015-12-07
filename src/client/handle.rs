@@ -7,15 +7,15 @@ enum ResponseHandleState<T: ApiMessage> {
 	HasResponse(T)
 }
 
-enum ResponseMultiState {
+enum ResponseStreamType {
 	SingleResponse,
 	SomeResponses(usize),
-	InfiniteResponses
+	StreamingResponses
 }
 
-impl ResponseMultiState {
+impl ResponseStreamType {
 	pub fn set_remaining_responses(&mut self, left: usize) {
-		*self = ResponseMultiState::SomeResponses(left);
+		*self = ResponseStreamType::SomeResponses(left);
 	}
 }
 
@@ -43,26 +43,26 @@ impl <T: ApiMessage> ResponseHandleState<T> {
 		*self = ResponseHandleState::HasResponse(msg);
 	}
 
-	pub fn get_response(&mut self, multi_state: &mut ResponseMultiState) -> Option<T> {
-		match *multi_state {
+	pub fn get_response(&mut self, stream: &mut ResponseStreamType) -> Option<T> {
+		match *stream {
 			//1 response
-			ResponseMultiState::SingleResponse => {
+			ResponseStreamType::SingleResponse => {
 				if let Some(msg) = self.block_for_response() {
 					self.set_cached_response(msg);
 				}
 				self.get_cached_response()
 			},
 			//n responses
-			ResponseMultiState::SomeResponses(n) if n > 0 => {
-				multi_state.set_remaining_responses(n - 1);
+			ResponseStreamType::SomeResponses(n) if n > 0 => {
+				stream.set_remaining_responses(n - 1);
 				self.block_for_response()
 			},
 			//0 responses
-			ResponseMultiState::SomeResponses(_) => {
+			ResponseStreamType::SomeResponses(_) => {
 				None
 			},
 			//infinite responses
-			ResponseMultiState::InfiniteResponses => {
+			ResponseStreamType::StreamingResponses => {
 				self.block_for_response()
 			}
 		}
@@ -74,39 +74,39 @@ impl <T: ApiMessage> ResponseHandleState<T> {
 /// This type also takes ownership of the receiver, and so it will be disposed of once the handle falls out of scope
 pub struct ResponseHandle<T: ApiMessage> {
 	state: ResponseHandleState<T>,
-	multi: ResponseMultiState
+	stream: ResponseStreamType
 }
 
 impl <T: ApiMessage> ResponseHandle<T> {
 	pub fn new(rx: Receiver<Vec<u8>>) -> ResponseHandle<T> {
 		ResponseHandle {
 			state: ResponseHandleState::AwaitingResponse(rx),
-			multi: ResponseMultiState::SingleResponse
+			stream: ResponseStreamType::SingleResponse
 		}
 	}
 
-	pub fn many(rx: Receiver<Vec<u8>>, count: usize) -> ResponseHandle<T> {
+	pub fn some(rx: Receiver<Vec<u8>>, count: usize) -> ResponseHandle<T> {
 		ResponseHandle {
 			state: ResponseHandleState::AwaitingResponse(rx),
-			multi: ResponseMultiState::SomeResponses(count)
+			stream: ResponseStreamType::SomeResponses(count)
 		}
 	}
 
 	pub fn streaming(rx: Receiver<Vec<u8>>) -> ResponseHandle<T> {
 		ResponseHandle {
 			state: ResponseHandleState::AwaitingResponse(rx),
-			multi: ResponseMultiState::InfiniteResponses
+			stream: ResponseStreamType::StreamingResponses
 		}
 	}
 	
 	pub fn from_response(msg: T) -> ResponseHandle<T> {
 		ResponseHandle {
 			state: ResponseHandleState::HasResponse(msg),
-			multi: ResponseMultiState::SingleResponse
+			stream: ResponseStreamType::SingleResponse
 		}
 	}
 	
 	pub fn response(&mut self) -> Option<T> {
-		self.state.get_response(&mut self.multi)
+		self.state.get_response(&mut self.stream)
 	}
 }

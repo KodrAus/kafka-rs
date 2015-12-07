@@ -18,6 +18,7 @@ fn request<Req: ApiMessage, Res: ApiMessage>(_req: Req, res_factory: fn() -> Res
 	let (tx, rx) = mpsc::channel();
 	let res = encode(&res_factory()).unwrap();
 
+	//Block on another thread and then send the response
 	let _ = thread::spawn(move || {
 		thread::sleep(Duration::from_millis(WAIT));
 
@@ -27,10 +28,11 @@ fn request<Req: ApiMessage, Res: ApiMessage>(_req: Req, res_factory: fn() -> Res
 	Ok(ResponseHandle::<Res>::new(rx))
 }
 
-fn request_many<Req: ApiMessage, Res: ApiMessage>(_req: Req, res_factory: fn() -> Res, total: usize) -> Result<ResponseHandle<Res>, Error> {	
+fn request_some<Req: ApiMessage, Res: ApiMessage>(_req: Req, res_factory: fn() -> Res, total: usize) -> Result<ResponseHandle<Res>, Error> {	
 	let (tx, rx) = mpsc::channel();
 	let res = encode(&res_factory()).unwrap();
 
+	//Block on another thread and then send the responses
 	let _ = thread::spawn(move || {
 		for _ in 0..total - 1 {
 			thread::sleep(Duration::from_millis(WAIT));
@@ -40,13 +42,14 @@ fn request_many<Req: ApiMessage, Res: ApiMessage>(_req: Req, res_factory: fn() -
 		}
 	});
 	
-	Ok(ResponseHandle::<Res>::many(rx, total - 1))
+	Ok(ResponseHandle::<Res>::some(rx, total - 1))
 }
 
 fn request_streaming<Req: ApiMessage, Res: ApiMessage>(_req: Req, res_factory: fn() -> Res, total: usize) -> Result<ResponseHandle<Res>, Error> {	
 	let (tx, rx) = mpsc::channel();
 	let res = encode(&res_factory()).unwrap();
 
+	//Block on another thread and then send the responses
 	let _ = thread::spawn(move || {
 		for _ in 0..total {
 			thread::sleep(Duration::from_millis(WAIT));
@@ -107,10 +110,10 @@ fn response_handle_does_not_block_more_than_once() {
 
 #[test]
 fn response_handle_can_block_for_n_messages() {
-	let msgs = 10;
+	let msgs = 3;
 
 	//Generate some response handles, doesn't block the current thread waiting for the response
-	let mut handle = request_many(MyRequest { 
+	let mut handle = request_some(MyRequest { 
 		id: 1, 
 		content: "my request content".to_string() 
 	}, my_response_factory, msgs).unwrap();
@@ -130,13 +133,13 @@ fn response_handle_can_block_for_n_messages() {
 		c += 1;
 	}
 
-	assert!(sw.elapsed_ms() < (WAIT as i64) * 11);
+	assert!(sw.elapsed_ms() < (WAIT as i64) * (msgs + 1) as i64);
 	assert!(c == msgs);
 }
 
 #[test]
 fn response_handle_can_block_for_infinite_messages() {
-	let msgs = 10;
+	let msgs = 3;
 
 	//Generate some response handles, doesn't block the current thread waiting for the response
 	let mut handle = request_streaming(MyRequest { 
@@ -152,5 +155,5 @@ fn response_handle_can_block_for_infinite_messages() {
 		let _ = handle.response();
 	}
 
-	assert!(sw.elapsed_ms() < (WAIT as i64) * 11);
+	assert!(sw.elapsed_ms() < (WAIT as i64) * (msgs + 1) as i64);
 }

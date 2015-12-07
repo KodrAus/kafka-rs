@@ -3,7 +3,6 @@ extern crate byteorder;
 
 use std::io::Cursor;
 use std::mem;
-
 use mio::{ Handler, EventLoop, Token, EventSet };
 use mio::util::Slab;
 use mio::tcp::TcpStream;
