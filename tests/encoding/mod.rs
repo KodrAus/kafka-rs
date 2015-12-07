@@ -41,7 +41,7 @@ fn can_wrap_and_get_encoded_message_length() {
 	};
 
 	//Serialise the request and then deserialise
-	let mut bytes = encode(&req).unwrap();
+	let bytes = encode(&req).unwrap();
 	let len = bytes.len();
 	let bytes_with_len = wrap_msg_len(bytes);
 

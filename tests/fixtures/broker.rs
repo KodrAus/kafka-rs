@@ -1,7 +1,7 @@
 extern crate mio;
 extern crate kafka;
 
-use mio::{ Handler, EventLoop };
+use mio::{ Handler };
 
 pub struct Broker;
 

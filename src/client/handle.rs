@@ -84,6 +84,20 @@ impl <T: ApiMessage> ResponseHandle<T> {
 			multi: ResponseMultiState::SingleResponse
 		}
 	}
+
+	pub fn many(rx: Receiver<Vec<u8>>, count: usize) -> ResponseHandle<T> {
+		ResponseHandle {
+			state: ResponseHandleState::AwaitingResponse(rx),
+			multi: ResponseMultiState::SomeResponses(count)
+		}
+	}
+
+	pub fn streaming(rx: Receiver<Vec<u8>>) -> ResponseHandle<T> {
+		ResponseHandle {
+			state: ResponseHandleState::AwaitingResponse(rx),
+			multi: ResponseMultiState::InfiniteResponses
+		}
+	}
 	
 	pub fn from_response(msg: T) -> ResponseHandle<T> {
 		ResponseHandle {

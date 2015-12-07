@@ -32,7 +32,6 @@ impl HasKey for MyResponse {
 	}
 }
 
-//TODO: Implement separately for each enum variant
 #[derive(RustcEncodable, RustcDecodable, Clone)]
 pub enum MyMessage<T: ApiMessage> {
 	Message(T),
