@@ -7,6 +7,7 @@ use mio::{ Handler, EventLoop, Token, EventSet };
 use mio::util::Slab;
 use mio::tcp::TcpStream;
 use super::{ ConnectionMessage };
+use ::sync::Sender;
 
 //The main io loop for clients to interact with
 pub struct ConnectionManager {
@@ -60,12 +61,12 @@ impl Handler for ConnectionManager {
 struct Connection {
 	socket: TcpStream,
 	token: Token,
-	state: State
+	state: ConnectionState
 }
 
-enum State {
-	Reading(Vec<u8>),
-	ReadingMessage(u32, Vec<u8>),
-	Writing(Cursor<Vec<u8>>),
+enum ConnectionState {
+	Reading(Option<Sender>, Vec<u8>),
+	ReadingMessage(Option<Sender>, u32, Vec<u8>),
+	Writing(Option<Sender>, Cursor<Vec<u8>>),
 	Closed
 }

@@ -2,7 +2,6 @@ extern crate rustc_serialize;
 
 use std::any::Any;
 use rustc_serialize::{ Encodable, Decodable };
-use ::encoding::Compression;
 
 /// A standard Kafka message format for both requests and responses in protocol APIs to implement.
 /// The ApiMessage type is also the right trait for you to implement on your custom event types.
@@ -51,3 +50,10 @@ pub struct MessageSet<T: ApiMessage> {
 }
 
 impl <T: ApiMessage> ApiMessage for MessageSet<T> { }
+
+#[derive(RustcEncodable, RustcDecodable, Clone)]
+pub enum Compression {
+	None,
+	Gzip,
+	Snappy
+}

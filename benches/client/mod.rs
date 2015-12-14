@@ -3,8 +3,8 @@ extern crate mio;
 extern crate kafka;
 
 use test::Bencher;
-use kafka::client::ResponseHandle;
-use kafka::client::protocol::ApiResponseMessage;
+use kafka::sync::ResponseHandle;
+use kafka::protocol::ApiResponseMessage;
 use ::fixtures::*;
 
 #[bench]

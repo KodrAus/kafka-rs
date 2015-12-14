@@ -6,17 +6,10 @@ use std::io::Cursor;
 use rustc_serialize::{ Encodable, Decodable };
 use byteorder::{ ByteOrder, BigEndian, WriteBytesExt };
 use self::impl_rustc_serialize::{ encode as enc, decode as dec };
-use ::client::protocol::{ ApiMessage, ApiRequestMessage };
+pub use super::*;
 
 pub type EncodingResult<T> = impl_rustc_serialize::EncodingResult<T>;
 pub type DecodingResult<T> = impl_rustc_serialize::DecodingResult<T>;
-
-#[derive(RustcEncodable, RustcDecodable, Clone)]
-pub enum Compression {
-	None,
-	Gzip,
-	Snappy
-}
 
 pub fn encode<T: Encodable>(data: &T) -> EncodingResult<Vec<u8>> {
 	enc(data)

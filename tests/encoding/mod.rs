@@ -1,8 +1,8 @@
 extern crate bincode;
 extern crate kafka;
 
-use kafka::client::protocol::*;
-use kafka::encoding::{ encode, decode, wrap_msg_len, get_msg_len };
+use kafka::protocol::*;
+use kafka::protocol::encoding::{ encode, decode, wrap_msg_len, get_msg_len };
 use ::fixtures::*;
 
 #[test]

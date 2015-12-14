@@ -1,8 +1,8 @@
 extern crate kafka;
 extern crate test;
 
-use kafka::client::protocol::*;
-use kafka::encoding::{ encode, decode };
+use kafka::protocol::*;
+use kafka::protocol::encoding::{ encode, decode };
 use ::fixtures::*;
 
 use test::Bencher;

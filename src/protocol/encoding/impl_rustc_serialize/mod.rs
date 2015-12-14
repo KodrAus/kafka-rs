@@ -7,7 +7,7 @@ use std::io::{ Write, Read };
 use rustc_serialize::{ Encodable, Decodable };
 use bincode::SizeLimit;
 use bincode::rustc_serialize::SizeChecker;
-use ::client::protocol::{ ApiMessage, ApiRequestMessage, ApiResponseMessage };
+use ::protocol::{ ApiMessage, ApiRequestMessage, ApiResponseMessage };
 
 pub use super::usize_as_u32;
 pub use self::writer::{ EncoderWriter, EncodingResult, EncodingError };

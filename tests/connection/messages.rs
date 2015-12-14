@@ -1,8 +1,8 @@
 extern crate kafka;
 
-use std::sync::mpsc;
 use kafka::conn::*;
-use kafka::encoding::{ encode };
+use kafka::sync;
+use kafka::protocol::encoding::{ encode };
 
 use ::fixtures::*;
 
@@ -16,7 +16,7 @@ fn can_wrap_serialised_request_in_connection_message() {
 
 	//Serialise and wrap in a connection message
 	//This takes a sender to asynchronously send the response on
-	let (tx, _) = mpsc::channel();
+	let (tx, _) = sync::channel();
 	let _ = ConnectionMessage::Request(tx, encode(&req).unwrap());
 }
 

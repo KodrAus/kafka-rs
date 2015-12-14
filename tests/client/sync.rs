@@ -1,21 +1,21 @@
 extern crate kafka;
 extern crate stopwatch;
 
-use std::sync::mpsc;
 use std::thread;
 use std::io::Error;
 use std::time::Duration;
 use stopwatch::{ Stopwatch };
-use kafka::client::ResponseHandle;
-use kafka::client::protocol::*;
-use kafka::encoding::encode;
+use kafka::sync;
+use kafka::sync::ResponseHandle;
+use kafka::protocol::*;
+use kafka::protocol::encoding::encode;
 use ::fixtures::*;
 
 const WAIT: u64 = 500;
 
 //A little non-blocking test method that returns a response handle for a request. We just pass in a response factory function to return.
 fn request<Req: ApiMessage, Res: ApiMessage>(_req: Req, res_factory: fn() -> Res) -> Result<ResponseHandle<Res>, Error> {	
-	let (tx, rx) = mpsc::channel();
+	let (tx, rx) = sync::channel();
 	let res = encode(&res_factory()).unwrap();
 
 	//Block on another thread and then send the response
@@ -29,7 +29,7 @@ fn request<Req: ApiMessage, Res: ApiMessage>(_req: Req, res_factory: fn() -> Res
 }
 
 fn request_some<Req: ApiMessage, Res: ApiMessage>(_req: Req, res_factory: fn() -> Res, total: usize) -> Result<ResponseHandle<Res>, Error> {	
-	let (tx, rx) = mpsc::channel();
+	let (tx, rx) = sync::channel();
 	let res = encode(&res_factory()).unwrap();
 
 	//Block on another thread and then send the responses
@@ -46,7 +46,7 @@ fn request_some<Req: ApiMessage, Res: ApiMessage>(_req: Req, res_factory: fn() -
 }
 
 fn request_streaming<Req: ApiMessage, Res: ApiMessage>(_req: Req, res_factory: fn() -> Res, total: usize) -> Result<ResponseHandle<Res>, Error> {	
-	let (tx, rx) = mpsc::channel();
+	let (tx, rx) = sync::channel();
 	let res = encode(&res_factory()).unwrap();
 
 	//Block on another thread and then send the responses
