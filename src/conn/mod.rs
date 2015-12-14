@@ -1,6 +1,5 @@
 pub mod io_loop;
 
-use mio::Token;
 use ::sync::{ Sender };
 
 /// The low-level message that a connection on the event loop will accept

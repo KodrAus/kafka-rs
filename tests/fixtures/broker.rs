@@ -1,12 +1,36 @@
 extern crate mio;
 extern crate kafka;
 
-use mio::{ Handler };
+use kafka::protocol::ApiMessage;
+use kafka::protocol::encoding::{ encode };
+use kafka::sync::{ Sender };
+use kafka::conn::ConnectionHandler;
 
-pub struct Broker;
+pub struct TestHandler<T: ApiMessage> {
+	res: T,
+	handled: u16
+}
 
-//Accepts a connection, reads the data, then sends a response
-impl Handler for Broker {
-	type Timeout = ();
-	type Message = ();
+impl <T: ApiMessage> TestHandler<T> {
+	fn get_res(&self) -> &T {
+		&self.res
+	}
+
+	fn new(res: T) -> TestHandler<T> {
+		TestHandler::<T> {
+			res: res,
+			handled: 0
+		}
+	}
+}
+
+impl <T: ApiMessage> ConnectionHandler for TestHandler<T> {
+	fn request(&mut self, handle: Sender, bytes: Vec<u8>) {
+		let res_bytes = encode(self.get_res()).unwrap();
+		handle.send(res_bytes);
+	}
+
+	fn execute(&mut self, bytes: Vec<u8>) {
+
+	}
 }
