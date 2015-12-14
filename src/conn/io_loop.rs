@@ -6,7 +6,7 @@ use std::mem;
 use mio::{ Handler, EventLoop, Token, EventSet };
 use mio::util::Slab;
 use mio::tcp::TcpStream;
-use super::{ ConnectionMessage };
+use super::{ ConnectionMessage, ConnectionHandler };
 use ::sync::Sender;
 
 //The main io loop for clients to interact with
@@ -22,26 +22,31 @@ impl ConnectionManager {
 	}
 }
 
+impl ConnectionHandler for ConnectionManager {
+	fn request(&mut self, handle: Sender, bytes: Vec<u8>) {
+		//Find an available, compatible connection
+		//Store the sender against the connections token id
+		//Store the message with the connections token id
+	}
+
+	fn execute(&mut self, bytes: Vec<u8>) {
+		//Find an available, compatible connection
+		//Store the message with the connections token id
+	}
+}
+
 impl Handler for ConnectionManager {
 	type Timeout = ();
 	type Message = ConnectionMessage;
 
 	fn notify(&mut self, event_loop: &mut EventLoop<ConnectionManager>, msg: Self::Message) {
 		match msg {
-			//Sent by clients
 			ConnectionMessage::Request(sender, bytes) => {
-				//Find an available, compatible connection
-				//Store the sender against the connections token id
-				//Store the message with the connections token id
-				panic!("implement")
+				self.request(sender, bytes);
 			},
-			//Sent by clients
 			ConnectionMessage::Execute(bytes) => {
-				//Find an available, compatible connection
-				//Store the message with the connections token id
-				panic!("implement")
+				self.execute(bytes);
 			},
-			//Sent by connections
 			ConnectionMessage::Response(bytes) => {
 				//Find a saved sender by token id
 				//If found, push bytes down channel
