@@ -9,6 +9,8 @@ use mio::tcp::TcpStream;
 use super::{ ConnectionMessage, ConnectionHandler };
 use ::sync::Sender;
 
+//TODO: We need to be able to easily specify our own event loop implementations (such as handling messages directly) as opposed to threading. Conn API needs to be useful in its own right
+
 //The main io loop for clients to interact with
 pub struct ConnectionManager {
 	connections: Slab<Connection>
