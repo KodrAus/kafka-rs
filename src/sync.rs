@@ -9,6 +9,7 @@ pub fn channel() -> (Sender, Receiver) {
 	mpsc::channel()
 }
 
+//TODO: Move ResponseHandle to client.rs
 /// Wraps up a receiver in a strongly typed bundle
 /// Used by the client to block on responses. Type arg ensures we don't try to receive unexpected messages
 /// This type also takes ownership of the receiver, and so it will be disposed of once the handle falls out of scope
