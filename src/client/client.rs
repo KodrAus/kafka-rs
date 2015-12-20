@@ -7,9 +7,8 @@ use super::protocol::{
 	ApiRequestMessage, 
 	ApiResponseMessage 
 };
-use ::encoding::{ encode, decode };
 use super::ResponseHandle;
-
+use ::encoding::{ encode, decode };
 use ::conn::ConnectionMessage;
 
 pub struct Client {
@@ -36,5 +35,13 @@ impl Client {
 		self.io.send(ConnectionMessage::Request(tx, bytes));
 
 		Ok(ResponseHandle::new(rx))
+	}
+
+	pub fn execute<Req: ApiMessage>(&self, msg: ApiRequestMessage<Req>) {
+		let mut msgbytes = encode(&msg).unwrap();
+		let mut bytes = encode(&msgbytes.len()).unwrap();
+		bytes.append(&mut msgbytes);
+
+		self.io.send(ConnectionMessage::Execute(bytes));
 	}
 }
