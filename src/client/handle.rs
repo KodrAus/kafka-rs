@@ -1,9 +1,51 @@
-use std::sync::mpsc::Receiver;
-use super::protocol::ApiMessage;
-use ::encoding::decode;
+use ::protocol::ApiMessage;
+use ::protocol::encoding::decode;
+use ::sync::{ Sender, Receiver, channel };
+
+/// Wraps up a receiver in a strongly typed bundle
+/// Used by the client to block on responses. Type arg ensures we don't try to receive unexpected messages
+/// This type also takes ownership of the receiver, and so it will be disposed of once the handle falls out of scope
+pub struct ResponseHandle<T: ApiMessage> {
+	state: ResponseHandleState<T>,
+	stream: ResponseStreamType
+}
+
+impl <T: ApiMessage> ResponseHandle<T> {
+	pub fn new(rx: Receiver) -> ResponseHandle<T> {
+		ResponseHandle {
+			state: ResponseHandleState::AwaitingResponse(rx),
+			stream: ResponseStreamType::SingleResponse
+		}
+	}
+
+	pub fn some(rx: Receiver, count: usize) -> ResponseHandle<T> {
+		ResponseHandle {
+			state: ResponseHandleState::AwaitingResponse(rx),
+			stream: ResponseStreamType::SomeResponses(count)
+		}
+	}
+
+	pub fn streaming(rx: Receiver) -> ResponseHandle<T> {
+		ResponseHandle {
+			state: ResponseHandleState::AwaitingResponse(rx),
+			stream: ResponseStreamType::StreamingResponses
+		}
+	}
+	
+	pub fn from_response(msg: T) -> ResponseHandle<T> {
+		ResponseHandle {
+			state: ResponseHandleState::HasResponse(msg),
+			stream: ResponseStreamType::SingleResponse
+		}
+	}
+	
+	pub fn response(&mut self) -> Option<T> {
+		self.state.get_response(&mut self.stream)
+	}
+}
 
 enum ResponseHandleState<T: ApiMessage> {
-	AwaitingResponse(Receiver<Vec<u8>>),
+	AwaitingResponse(Receiver),
 	HasResponse(T)
 }
 
@@ -66,47 +108,5 @@ impl <T: ApiMessage> ResponseHandleState<T> {
 				self.block_for_response()
 			}
 		}
-	}
-}
-
-/// Wraps up a receiver in a strongly typed bundle
-/// Used by the client to block on responses. Type arg ensures we don't try to receive unexpected messages
-/// This type also takes ownership of the receiver, and so it will be disposed of once the handle falls out of scope
-pub struct ResponseHandle<T: ApiMessage> {
-	state: ResponseHandleState<T>,
-	stream: ResponseStreamType
-}
-
-impl <T: ApiMessage> ResponseHandle<T> {
-	pub fn new(rx: Receiver<Vec<u8>>) -> ResponseHandle<T> {
-		ResponseHandle {
-			state: ResponseHandleState::AwaitingResponse(rx),
-			stream: ResponseStreamType::SingleResponse
-		}
-	}
-
-	pub fn some(rx: Receiver<Vec<u8>>, count: usize) -> ResponseHandle<T> {
-		ResponseHandle {
-			state: ResponseHandleState::AwaitingResponse(rx),
-			stream: ResponseStreamType::SomeResponses(count)
-		}
-	}
-
-	pub fn streaming(rx: Receiver<Vec<u8>>) -> ResponseHandle<T> {
-		ResponseHandle {
-			state: ResponseHandleState::AwaitingResponse(rx),
-			stream: ResponseStreamType::StreamingResponses
-		}
-	}
-	
-	pub fn from_response(msg: T) -> ResponseHandle<T> {
-		ResponseHandle {
-			state: ResponseHandleState::HasResponse(msg),
-			stream: ResponseStreamType::SingleResponse
-		}
-	}
-	
-	pub fn response(&mut self) -> Option<T> {
-		self.state.get_response(&mut self.stream)
 	}
 }

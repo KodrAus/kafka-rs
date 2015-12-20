@@ -1,15 +1,16 @@
 extern crate mio;
 
-use std::sync::mpsc;
 use mio::Sender;
-use super::protocol::{
+use ::protocol::{
 	ApiMessage, 
 	ApiRequestMessage, 
 	ApiResponseMessage 
 };
-use super::ResponseHandle;
-use ::encoding::{ encode, decode };
+
+use ::protocol::encoding::{ encode, decode };
+use ::sync::channel;
 use ::conn::ConnectionMessage;
+use super::ResponseHandle;
 
 pub struct Client {
 	app: String,
@@ -25,7 +26,7 @@ impl Client {
 	}
 
 	pub fn request<Req: ApiMessage, Res: ApiMessage>(&self, msg: ApiRequestMessage<Req>) -> Result<ResponseHandle<ApiResponseMessage<Res>>, String> {
-		let (tx, rx) = mpsc::channel();
+		let (tx, rx) = channel();
 
 		//Encode the message, then append its length to the front
 		let mut msgbytes = encode(&msg).unwrap();

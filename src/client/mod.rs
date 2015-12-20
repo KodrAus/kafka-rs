@@ -1,7 +1,5 @@
-pub mod protocol;
-
 mod client;
-pub use self::client::*;
-
 mod handle;
+
+pub use self::client::*;
 pub use self::handle::*;

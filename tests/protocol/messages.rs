@@ -1,7 +1,6 @@
 extern crate kafka;
 
-use kafka::client::protocol::*;
-use kafka::encoding::*;
+use kafka::protocol::*;
 use ::fixtures::*;
 
 #[test]

@@ -7,7 +7,6 @@ use std::io::{ Write, Read };
 use rustc_serialize::{ Encodable, Decodable };
 use bincode::SizeLimit;
 use bincode::rustc_serialize::SizeChecker;
-use ::client::protocol::{ ApiMessage, ApiRequestMessage, ApiResponseMessage };
 
 pub use super::usize_as_u32;
 pub use self::writer::{ EncoderWriter, EncodingResult, EncodingError };
@@ -83,14 +82,4 @@ pub fn encoded_size<T: Encodable>(t: &T) -> u64 {
     let mut size_checker = SizeChecker::new(MAX);
     t.encode(&mut size_checker).ok();
     size_checker.written
-}
-
-/// Given a maximum size limit, check how large an object would be if it
-/// were to be encoded.
-///
-/// If it can be encoded in `max` or fewer bytes, that number will be returned
-/// inside `Some`.  If it goes over bounds, then None is returned.
-pub fn encoded_size_bounded<T: Encodable>(t: &T, max: u64) -> Option<u64> {
-    let mut size_checker = SizeChecker::new(max);
-    t.encode(&mut size_checker).ok().map(|_| size_checker.written)
 }
