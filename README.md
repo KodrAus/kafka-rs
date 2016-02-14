@@ -1,18 +1,9 @@
 # kafka-rs
 
-Very early attempt at building an [Apache Kafka](http://kafka.apache.org/) client in [Rust](https://www.rust-lang.org/)
+## Dead Project Alert :(
 
-Currently does not even build. Watch this space :)
+For a proper client see: [kafka-rust](https://github.com/spicavigo/kafka-rust)
 
-## Goals
+This was a very early attempt at building an [Apache Kafka](http://kafka.apache.org/) client in [Rust](https://www.rust-lang.org/)
 
-To provide an asynchronous, high-level, strongly-typed, well tested and intuitive Kafka driver in Rust. The aim is to support two main use-cases with Kafka:
-
-- Once-off message sending / receiving through a standard connection with request/response methods
-- Streaming scenarios where messages are 'pumped' from a topic and handled by a filter, which in turn pumps its own messages to another topic. So each filter handles messages of a single type as they arrive, and may choose to publish messages of a single type in response.
-
-Both use-cases will build off a standard Kafka io base that will be suitable for any communication with a kafka cluster.
-
-## Tests
-### Integration
-Integration tests will require a running kafka broker on `localhost`. Integration tests are marked by the `test-integration` feature, and can be run with `cargo test --features test-integration`. In source these have the `#[cfg(feature="integration")]` attribute.
+The project was a way to learn the Rust language and test some ideas for what's become my [elasticsearch client](https://github.com/KodrAus/elasticsearch-rs)
